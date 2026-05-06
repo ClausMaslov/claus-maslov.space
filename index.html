@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Claus_Maslov</title>
+<meta name="description" content="Личный сайт Claus_Maslov — программист, майнкрафтер, фанат Лололошки." />
+<link rel="icon" href="minecraft_icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<style>
+  /* Minecraftia from a CDN, fallback to Press Start 2P */
+  @font-face {
+    font-family: 'Minecraftia';
+    src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Minecraft-Font@master/Minecraftia-Regular.ttf') format('truetype');
+    font-display: swap;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #000;
+    color: #fff;
+    font-family: 'Minecraftia', 'Press Start 2P', monospace;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    image-rendering: pixelated;
+    cursor: pointer;
+    -webkit-font-smoothing: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  #stars {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    z-index: 0;
+  }
+
+  /* Top bar */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 32px;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .logo {
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 #000, 0 0 12px rgba(255,255,255,0.4);
+  }
+  .logo small {
+    font-size: 10px;
+    margin-left: 4px;
+    opacity: 0.7;
+    vertical-align: sub;
+  }
+  .nav {
+    display: flex; gap: 28px;
+    pointer-events: auto;
+  }
+  .nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #000;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+  .nav a:hover {
+    color: #6cf0ff;
+    text-shadow: 2px 2px 0 #000, 0 0 12px #6cf0ff;
+  }
+
+  /* Center content */
+  .stage {
+    position: relative; z-index: 2;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 90px 20px 120px;
+  }
+  .name {
+    font-size: clamp(32px, 7vw, 80px);
+    letter-spacing: 4px;
+    text-shadow: 5px 5px 0 #000, 0 0 30px rgba(255,255,255,0.35);
+    animation: floaty 6s ease-in-out infinite;
+  }
+  .role {
+    margin-top: 18px;
+    font-size: clamp(14px, 2.4vw, 26px);
+    letter-spacing: 3px;
+    color: #d6d6d6;
+    text-shadow: 3px 3px 0 #000;
+    animation: floaty 6s ease-in-out infinite;
+    animation-delay: -2s;
+  }
+  .tagline {
+    margin-top: 26px;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: #9ca3af;
+    letter-spacing: 1px;
+    max-width: 560px;
+  }
+
+  .icons {
+    margin-top: 38px;
+    display: flex; gap: 28px;
+    justify-content: center;
+  }
+  .icon-btn {
+    width: 56px; height: 56px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+    transition: transform 0.2s, filter 0.2s;
+    filter: drop-shadow(3px 3px 0 #000);
+  }
+  .icon-btn:hover {
+    transform: translateY(-4px) scale(1.1);
+    filter: drop-shadow(0 0 14px #6cf0ff) drop-shadow(3px 3px 0 #000);
+  }
+  .icon-btn svg { width: 38px; height: 38px; }
+
+  /* Hint */
+  .hint {
+    position: fixed;
+    bottom: 60px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #000;
+    animation: blink 1.6s ease-in-out infinite;
+    pointer-events: none;
+    text-align: center;
+  }
+  .hint.hidden { display: none; }
+
+  /* Music indicator */
+  .music-status {
+    position: fixed;
+    bottom: 60px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: #6cf0ff;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #000;
+    opacity: 0;
+    transition: opacity 0.6s;
+    pointer-events: none;
+  }
+  .music-status.show { opacity: 1; }
+
+  /* Footer */
+  .footer {
+    position: fixed;
+    bottom: 18px; left: 0; right: 0;
+    text-align: center;
+    z-index: 4;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: #6b7280;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  /* Vignette */
+  .vignette {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.85) 100%);
+  }
+
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50%      { opacity: 1; }
+  }
+
+  /* About modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    position: relative;
+    max-width: 560px; width: 100%;
+    background: linear-gradient(180deg, #0a0a0a 0%, #111118 100%);
+    border: 2px solid #2a2a3a;
+    box-shadow: 0 0 0 4px #000, 0 0 60px rgba(108,240,255,0.25), inset 0 0 30px rgba(108,240,255,0.05);
+    padding: 36px 32px 32px;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.4s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+  .modal::before {
+    content: ''; position: absolute; inset: -2px;
+    background: linear-gradient(135deg, #6cf0ff, transparent 40%, transparent 60%, #b06cff);
+    z-index: -1; opacity: 0.5;
+  }
+  .modal-title {
+    font-family: 'Minecraftia', 'Press Start 2P', monospace;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: #6cf0ff;
+    text-shadow: 3px 3px 0 #000, 0 0 14px rgba(108,240,255,0.6);
+    margin-bottom: 20px;
+  }
+  .modal-text {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    line-height: 1.5;
+    color: #d6d6d6;
+    letter-spacing: 0.5px;
+  }
+  .modal-text .hl { color: #6cf0ff; }
+  .modal-close {
+    position: absolute; top: 10px; right: 14px;
+    background: transparent; border: none;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    text-shadow: 2px 2px 0 #000;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .modal-close:hover { color: #ff6c6c; transform: rotate(90deg); }
+  @media (max-width: 600px) {
+    .topbar { padding: 14px 16px; }
+    .logo { font-size: 11px; letter-spacing: 1px; }
+    .logo small { font-size: 8px; }
+    .nav { gap: 14px; }
+    .nav a { font-size: 9px; letter-spacing: 1px; }
+    .stage { padding: 80px 16px 90px; }
+    .name { letter-spacing: 2px; }
+    .role { margin-top: 12px; letter-spacing: 2px; }
+    .tagline { font-size: 18px; padding: 0 8px; margin-top: 18px; }
+    .icons { gap: 18px; margin-top: 26px; }
+    .icon-btn { width: 46px; height: 46px; }
+    .icon-btn svg { width: 30px; height: 30px; }
+    .hint { font-size: 14px; bottom: 44px; padding: 0 16px; }
+    .footer { font-size: 13px; bottom: 12px; padding: 0 12px; }
+    .modal { padding: 28px 20px 22px; }
+    .modal-title { font-size: 16px; letter-spacing: 2px; }
+    .modal-text { font-size: 19px; }
+  }
+  @media (max-height: 500px) and (orientation: landscape) {
+    .topbar { padding: 8px 18px; }
+    .logo { font-size: 10px; }
+    .nav { gap: 14px; }
+    .nav a { font-size: 9px; }
+    .stage { padding: 50px 20px 50px; }
+    .name { font-size: clamp(22px, 7vh, 44px); letter-spacing: 2px; }
+    .role { margin-top: 6px; font-size: clamp(10px, 2.4vh, 16px); letter-spacing: 2px; }
+    .tagline { margin-top: 8px; font-size: 15px; max-width: 480px; line-height: 1.2; }
+    .icons { margin-top: 12px; gap: 18px; }
+    .icon-btn { width: 36px; height: 36px; }
+    .icon-btn svg { width: 22px; height: 22px; }
+    .hint { font-size: 11px; bottom: 6px; }
+    .music-status { font-size: 11px; bottom: 6px; }
+    .footer { display: none; }
+  }
+  @supports (padding: max(0px)) {
+    .topbar {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+    .footer { bottom: max(14px, env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="vignette"></div>
+
+<header class="topbar">
+  <div class="logo">CLAUS_MASLOV<small>js</small></div>
+  <nav class="nav">
+    <a href="#about" id="aboutLink">ABOUT</a>
+    <a href="https://t.me/claus_maslov" target="_blank" rel="noopener">CONTACT</a>
+  </nav>
+</header>
+
+<main class="stage">
+  <h1 class="name">CLAUS_MASLOV</h1>
+  <div class="role" id="about">PROGRAMMER · 18 Y.O.</div>
+  <p class="tagline">Программист. Люблю майнкрафт и смотреть Лололошку. Здесь — моя маленькая ночная вселенная.</p>
+
+  <div class="icons">
+    <a class="icon-btn" href="https://t.me/claus_maslov" target="_blank" rel="noopener" title="Telegram">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+    </a>
+    <a class="icon-btn" href="https://discord.com/users/clausmaslov" target="_blank" rel="noopener" title="Discord">
+      <svg viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"/></svg>
+    </a>
+    <a class="icon-btn" href="https://github.com/" target="_blank" rel="noopener" title="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.79 5.44.79 11.71c0 4.94 3.2 9.13 7.64 10.6.56.1.77-.24.77-.54v-2.07c-3.11.68-3.77-1.34-3.77-1.34-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.21 1.16-2.99-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.08 1.14.89-.25 1.85-.37 2.8-.37s1.91.12 2.8.37c2.13-1.45 3.07-1.14 3.07-1.14.61 1.54.23 2.68.11 2.96.72.78 1.16 1.77 1.16 2.99 0 4.29-2.62 5.23-5.11 5.51.4.34.76 1.02.76 2.06v3.05c0 .3.2.65.78.54 4.43-1.47 7.62-5.66 7.62-10.6C23.21 5.44 18.27.5 12 .5z"/></svg>
+    </a>
+  </div>
+</main>
+
+<div class="hint" id="hint">CLICK ANYWHERE TO START MUSIC ♪</div>
+<div class="music-status" id="musicStatus">♪ NOW PLAYING ♪</div>
+
+<footer class="footer">© 2026 Claus_Maslov · All rights reserved</footer>
+
+<div class="modal-overlay" id="aboutModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-title">// ABOUT_ME</div>
+    <p class="modal-text">
+      I craft robust <span class="hl">server-side architectures</span>. Specializing in the <span class="hl">JS ecosystem</span>, I develop reliable APIs and scalable logic using <span class="hl">Node.js</span>, <span class="hl">NestJS</span>, and strictly-typed <span class="hl">TS</span>.
+    </p>
+  </div>
+</div>
+
+<script>
+/* ===========  PIXEL STAR FIELD (Minecraft style)  =========== */
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+let bigStars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  initStars();
+}
+window.addEventListener('resize', resize);
+
+function initStars() {
+  stars = [];
+  bigStars = [];
+  const small = Math.floor((canvas.width * canvas.height) / 4500);
+  for (let i = 0; i < small; i++) {
+    stars.push({
+      x: Math.floor(Math.random() * canvas.width),
+      y: Math.floor(Math.random() * canvas.height),
+      size: Math.random() < 0.7 ? 2 : 3,
+      base: 0.4 + Math.random() * 0.6,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.5 + Math.random() * 1.5
+    });
+  }
+  const big = Math.floor((canvas.width * canvas.height) / 90000);
+  for (let i = 0; i < big; i++) {
+    bigStars.push({
+      x: Math.floor(Math.random() * canvas.width),
+      y: Math.floor(Math.random() * canvas.height),
+      size: 4 + Math.floor(Math.random() * 3),
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.5 + Math.random()
+    });
+  }
+}
+
+function drawPixelStar(x, y, s, alpha) {
+  ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+  ctx.fillRect(x, y, s, s);
+}
+
+function drawBigStar(x, y, s, alpha) {
+  // 4-point pixel sparkle
+  ctx.fillStyle = `rgba(200,235,255,${alpha})`;
+  // center
+  ctx.fillRect(x - s/2, y - s/2, s, s);
+  // arms
+  const a = Math.max(2, Math.floor(s / 2));
+  ctx.fillRect(x - s/2 - a, y - 1, a, 2);
+  ctx.fillRect(x + s/2,     y - 1, a, 2);
+  ctx.fillRect(x - 1, y - s/2 - a, 2, a);
+  ctx.fillRect(x - 1, y + s/2,     2, a);
+  // glow
+  ctx.fillStyle = `rgba(140,210,255,${alpha * 0.25})`;
+  ctx.fillRect(x - s, y - s, s * 2, s * 2);
+}
+
+let t = 0;
+function tick() {
+  t += 0.016;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const st of stars) {
+    const a = st.base * (0.55 + 0.45 * Math.sin(t * st.speed + st.phase));
+    drawPixelStar(st.x, st.y, st.size, a);
+  }
+  for (const st of bigStars) {
+    const a = 0.5 + 0.5 * Math.sin(t * st.speed + st.phase);
+    drawBigStar(st.x, st.y, st.size, a);
+  }
+  requestAnimationFrame(tick);
+}
+resize();
+tick();
+
+/* ===========  BACKGROUND MUSIC (MP3)  =========== */
+let audioStarted = false;
+const bgMusic = new Audio('claus-music.mp3'); // Указываем путь к вашему файлу
+bgMusic.loop = true; // Включаем зацикливание, чтобы трек играл бесконечно
+bgMusic.volume = 0.4; // Громкость (от 0.0 до 1.0)
+
+function startMusic() {
+  // БАГФИКС: Если музыка уже запущена, просто выходим из функции.
+  // Это предотвращает многократный запуск при двойных или частых кликах.
+  if (audioStarted) return; 
+  
+  bgMusic.play().then(() => {
+    // Ставим флаг, что музыка играет, только после успешного запуска
+    audioStarted = true; 
+    
+    // Прячем подсказку "CLICK ANYWHERE..."
+    document.getElementById('hint').classList.add('hidden');
+    
+    // Показываем надпись "♪ NOW PLAYING ♪"
+    const status = document.getElementById('musicStatus');
+    status.classList.add('show');
+    setTimeout(() => status.classList.remove('show'), 3500);
+  }).catch((error) => {
+    // Защита от строгих браузеров (Safari/Chrome), если они блокируют звук
+    console.warn("Ожидание взаимодействия с пользователем:", error);
+  });
+}
+
+// Слушаем клики по всему документу
+document.addEventListener('click', (e) => {
+  // Игнорируем клики по ссылкам, кнопкам и их содержимому
+  if (e.target.closest('a, button, .modal')) return;
+  startMusic();
+});
+
+/* ===========  ABOUT MODAL  =========== */
+const aboutModal = document.getElementById('aboutModal');
+const aboutLink = document.getElementById('aboutLink');
+const modalClose = document.getElementById('modalClose');
+function openAbout(e) { if (e) e.preventDefault(); aboutModal.classList.add('show'); }
+function closeAbout() { aboutModal.classList.remove('show'); }
+aboutLink.addEventListener('click', openAbout);
+modalClose.addEventListener('click', closeAbout);
+aboutModal.addEventListener('click', (e) => { if (e.target === aboutModal) closeAbout(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAbout(); });
+</script>
+</body>
+</html>
